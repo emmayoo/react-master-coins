@@ -1,0 +1,17 @@
+const BASE_URI = "https://api.coinpaprika.com/v1";
+
+export function fetchCoins () {
+	return fetch(`${BASE_URI}/coins`).then(response => response.json());
+}
+
+export function fetchInfoData (coinId: string) {
+	return fetch(`${BASE_URI}/coins/${coinId}`).then(response => response.json());
+}
+
+export function fetchPriceData (coinId: string) {
+	return fetch(`${BASE_URI}/tickers/${coinId}`).then(response => response.json());
+}
+
+export function fetchCoinHistory (coinId: string) {
+	return fetch(`https://ohlcv-api.nomadcoders.workers.dev/?coinId=${coinId}`).then(response => response.json());
+}
