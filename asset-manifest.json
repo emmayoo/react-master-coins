@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/react-master-coins/static/js/main.52cd25fe.js",
-    "index.html": "/react-master-coins/index.html",
-    "main.52cd25fe.js.map": "/react-master-coins/static/js/main.52cd25fe.js.map"
+    "main.js": "/nomadcode-react-master/static/js/main.2bb4405f.js",
+    "index.html": "/nomadcode-react-master/index.html",
+    "main.2bb4405f.js.map": "/nomadcode-react-master/static/js/main.2bb4405f.js.map"
   },
   "entrypoints": [
-    "static/js/main.52cd25fe.js"
+    "static/js/main.2bb4405f.js"
   ]
 }
