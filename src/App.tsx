@@ -1,10 +1,5 @@
-import styled, { createGlobalStyle, css } from "styled-components";
-import Router from "./Router";
-import { ReactQueryDevtools } from 'react-query/devtools';
-import { ThemeProvider } from "styled-components";
-import { darkTheme, lightTheme } from "./theme";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { isDarkAtom } from "./atoms";
+import { createGlobalStyle } from "styled-components";
+import ToDoList from "./components/ToDoList";
 
 const GlobalStyle = createGlobalStyle`
 /* http://meyerweb.com/eric/tools/css/reset/
@@ -72,78 +67,10 @@ a {
 }
 `
 
-const ThemeButton = styled.div<{ isDark: boolean }>`
-  padding: 0px 20px;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-
-  button {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-
-    background: 0;
-    border: 0;
-    box-sizing: border-box;
-    cursor: pointer;
-    height: 30px;
-    width: 60px;
-    border: 1px solid rgba(255, 255, 255, 0);
-    
-    & span:nth-child(1) {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 60px;
-      height: 30px;
-      border-radius: 20px;
-      background-color: #d6d7db;
-      box-shadow: inset 1px 1px 3px 0 rgb(0 0 0 / 40%);
-      transition: 0.3s;
-    }
-    
-    & span:nth-child(2) {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      width: 20px;
-      height: 20px;
-      background-color: #fff;
-      border-radius: 50%;
-      box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 40%);
-      transition: 0.3s;
-    }
-
-    ${props => props.isDark && css`
-      & span:nth-child(1) {
-        background-color: #ced4e2;
-        color: #141516;
-      }
-      & span:nth-child(2) {
-        left: 35px;
-        background-color: #141516;
-      }
-    `}
-  }
-`;
-
 function App() {
-  const isDark = useRecoilValue(isDarkAtom);
-  const setDarkAtom = useSetRecoilState(isDarkAtom);
-  const toggleDarkAtom = () => setDarkAtom(prev => !prev);
   return (<>
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-      <GlobalStyle />
-      <ThemeButton isDark={isDark}>
-        <button onClick={toggleDarkAtom}>
-          <span></span>
-          <span></span>
-        </button>
-      </ThemeButton>
-      <Router />
-      <ReactQueryDevtools />
-    </ThemeProvider>
+    <GlobalStyle />
+    <ToDoList />
   </>)
 }
 
