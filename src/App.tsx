@@ -1,77 +1,66 @@
-import { createGlobalStyle } from "styled-components";
-import ToDoList from "./components/ToDoList";
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { useRecoilState } from 'recoil';
 
-const GlobalStyle = createGlobalStyle`
-/* http://meyerweb.com/eric/tools/css/reset/
-   v5.0.1 | 20191019
-   License: none (public domain)
-*/
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, menu, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-main, menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, main, menu, nav, section {
-  display: block;
-}
-/* HTML5 hidden-attribute fix for newer browsers */
-*[hidden] {
-    display: none;
-}
-body {
-  line-height: 1;
-}
-menu, ol, ul {
-  list-style: none;
-}
-blockquote, q {
-  quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-  content: '';
-  content: none;
-}
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-* {
-  box-sizing: border-box;
-}
-body {
-  font-family: 'Source Sans Pro', sans-serif;
-  background-color: ${props => props.theme.bgColor};
-  color: ${props => props.theme.textColor};
-}
-a {
-  text-decoration: none;
-  color: inherit;
-}
-`
+import styled from "styled-components";
+import { toDoState } from './atoms';
+import Board from './components/Board';
+
+const Wrapper = styled.div`
+  display: flex;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+
+const Boards = styled.div`
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+`;
 
 function App() {
-  return (<>
-    <GlobalStyle />
-    <ToDoList />
-  </>)
+  const [toDos, setToDos] = useRecoilState(toDoState);
+  const onDragEnd = (info: DropResult) => {
+    const { destination, source } = info
+    // 제자리에 두는 경우
+    if (!destination) return;
+    setToDos(oldToDos => {
+      // 같은 droppableId
+      if (source.droppableId === destination.droppableId) {
+        const board = [...oldToDos[source.droppableId]];
+        const task = board.splice(source.index, 1);
+        board.splice(destination?.index, 0, task[0]);
+        return {
+          ...oldToDos,
+          [source.droppableId]: board,
+        };
+      } 
+       // 다른 droppableId
+      else {
+        const sourceBoard = [...oldToDos[source.droppableId]];
+        const destinationBoard = [...oldToDos[destination.droppableId]];
+        const task = sourceBoard.splice(source.index, 1);
+        destinationBoard.splice(destination?.index, 0, task[0]);
+        return {
+          ...oldToDos,
+          [source.droppableId]: sourceBoard,
+          [destination.droppableId]: destinationBoard
+        };
+      }
+    })
+  };
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Wrapper>
+        <Boards>
+          {Object.keys(toDos).map(boardId => <Board toDos={toDos[boardId]} boardId={boardId} key={boardId}/>)}
+        </Boards>
+      </Wrapper>
+    </DragDropContext>
+  );
 }
-
 export default App;
