@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { Categories, IToDo } from '../atoms';
+import { Categories, categoriesSelector, IToDo } from '../atoms';
 import { toDoState } from "../atoms";
 
 const Content = styled.span`
@@ -32,6 +32,8 @@ const Li = styled.li`
 
 const ToDo = ({ text, category, id }: IToDo) => {
 	const setTodos = useSetRecoilState(toDoState);
+	const categories = useRecoilValue(categoriesSelector);
+
 	const onClick = (event:React.MouseEvent<HTMLButtonElement>) => {
 		const { currentTarget: { name } } = event;
 		setTodos((oldTodos) => {
@@ -60,10 +62,14 @@ const ToDo = ({ text, category, id }: IToDo) => {
 	return (
 		<Li>
 			<Content>{ text }</Content>
-			{category !== Categories.TODO && <Button name={Categories.TODO} onClick={onClick}>To Do</Button>}
-			{category !== Categories.DOING && <Button name={Categories.DOING} onClick={onClick}>Doing</Button>}
-			{category !== Categories.DONE && <Button name={Categories.DONE} onClick={onClick}>Done</Button>}
-			<Button onClick={() => onDelete(id)}>삭제</Button>
+			{
+				categories.map((cat, index) => {
+					if(category !== cat)
+						return (<Button key={index} name={cat} onClick={onClick}>{cat}</Button>)
+					return null;
+				})
+			}
+			<Button onClick={() => onDelete(id)}>DELETE</Button>
 		</Li> 
 	);
 };

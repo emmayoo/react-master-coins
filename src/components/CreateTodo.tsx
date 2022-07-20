@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -24,6 +23,7 @@ const CreateTodo = () => {
 	const { register, handleSubmit, setValue } = useForm<IForm>();
 
 	const onValid = ({toDo}: IForm) => {
+		if (!toDo) return
 		setToDos(oldToDos => {
 			const newTodos = [...oldToDos, { id: Date.now(), text: toDo, category: category }];
 
@@ -34,8 +34,8 @@ const CreateTodo = () => {
 		setValue('toDo', '');
 	}
 	return (
-		<Form onSubmit={handleSubmit(onValid)} id="form">
-			<Input {...register("toDo")} type="text" placeholder="To Do" id="input"/>
+		<Form onSubmit={handleSubmit(onValid)}>
+			<Input {...register("toDo")} type="text" placeholder="할 일을 적어주세요."/>
 			<button>추가</button>
 		</Form>
 	);
