@@ -1,66 +1,59 @@
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { useRecoilState } from 'recoil';
-
 import styled from "styled-components";
-import { toDoState } from './atoms';
-import Board from './components/Board';
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
-const Wrapper = styled.div`
+const Wrapper = styled(motion.div)`
+  height: 100vh;
+  width: 100vw;
   display: flex;
-  max-width: 480px;
-  width: 100%;
-  margin: 0 auto;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 `;
 
-const Boards = styled.div`
-  display: grid;
-  width: 100%;
-  gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
+const Box = styled(motion.div)`
+  width: 400px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 40px;
+  position: absolute;
+  top: 100px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
 `;
+
+const boxVariants = {
+  initial: {
+    opacity: 0,
+    scale: 0,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotateZ: 360,
+  },
+  leaving: {
+    opacity: 0,
+    scale: 0,
+    y: 50,
+  },
+};
 
 function App() {
-  const [toDos, setToDos] = useRecoilState(toDoState);
-  const onDragEnd = (info: DropResult) => {
-    const { destination, source } = info
-    // 제자리에 두는 경우
-    if (!destination) return;
-    setToDos(oldToDos => {
-      // 같은 droppableId
-      if (source.droppableId === destination.droppableId) {
-        const board = [...oldToDos[source.droppableId]];
-        const task = board.splice(source.index, 1);
-        board.splice(destination?.index, 0, task[0]);
-        return {
-          ...oldToDos,
-          [source.droppableId]: board,
-        };
-      } 
-       // 다른 droppableId
-      else {
-        const sourceBoard = [...oldToDos[source.droppableId]];
-        const destinationBoard = [...oldToDos[destination.droppableId]];
-        const task = sourceBoard.splice(source.index, 1);
-        destinationBoard.splice(destination?.index, 0, task[0]);
-        return {
-          ...oldToDos,
-          [source.droppableId]: sourceBoard,
-          [destination.droppableId]: destinationBoard
-        };
-      }
-    })
-  };
+  const [showing, setShowing] = useState(false);
+  const toggleShowing = () => setShowing((prev) => !prev);
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Wrapper>
-        <Boards>
-          {Object.keys(toDos).map(boardId => <Board toDos={toDos[boardId]} boardId={boardId} key={boardId}/>)}
-        </Boards>
-      </Wrapper>
-    </DragDropContext>
+    <Wrapper>
+      <button onClick={toggleShowing}>Click</button>
+      <AnimatePresence>
+        {showing ? (
+          <Box
+            variants={boxVariants}
+            initial="initial"
+            animate="visible"
+            exit="leaving"
+          />
+        ) : null}
+      </AnimatePresence>
+    </Wrapper>
   );
 }
 export default App;
